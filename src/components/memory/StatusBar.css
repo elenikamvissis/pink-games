@@ -1,0 +1,14 @@
+.status-bar {
+  margin-top: 2vw;
+  padding: 2vw;
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
+.status {
+  flex: 1;
+  margin: 0;
+}
+.button {
+  flex: 0;
+}
