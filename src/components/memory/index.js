@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import './index.css'
+
 import MemoryCard from './MemoryCard'
 import StatusBar from './StatusBar'
+
+import './index.css'
+
+import * as utils from '../../utils'
 
 const colors = [
   'pink',
@@ -54,6 +58,19 @@ function Memory() {
       return () => clearInterval(intervalId)
     }
   }, [startTime, win])
+
+  useEffect(() => {
+    if (win) {
+      utils
+        .saveScore('memory', {
+          name: name,
+          timeMs: elapsedTime,
+        })
+        .then(() => console.log('Score saved.'))
+        .then(() => utils.fetchLeaderboard('memory'))
+        .then((leaderboard) => console.log(leaderboard))
+    }
+  }, [win])
 
   const [game, setGame] = useState({
     cards: generateCards(),
