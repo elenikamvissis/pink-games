@@ -44,15 +44,16 @@ function flipCard(cards, keysToFlip) {
 function Memory() {
   const [startTime, setStartTime] = useState(0)
   const [elapsedTime, setElapsedTime] = useState(0)
+  const [win, setWin] = useState(false)
 
   useEffect(() => {
-    if (startTime !== 0) {
+    if (startTime !== 0 && !win) {
       const intervalId = setInterval(() => {
         setElapsedTime(Date.now() - startTime)
       }, 1000)
       return () => clearInterval(intervalId)
     }
-  }, [startTime])
+  }, [startTime, win])
 
   const [game, setGame] = useState({
     cards: generateCards(),
@@ -68,6 +69,7 @@ function Memory() {
     })
     setStartTime(0)
     setElapsedTime(0)
+    setWin(false)
   }
 
   function onCardClick(clickedCard) {
@@ -80,6 +82,8 @@ function Memory() {
       // If both firstCard and secondCard from the previous state are undefined, we should
       // flip the clicked card and set it as the firstCard.
       if (!firstCard && !secondCard) {
+        // We probably just need to check if firstCard exists
+        // if no firstCard then we (probably) don't have a secondCard aswell.
         return {
           cards: flipCard(cards, [clickedCard.key]),
           firstCard: clickedCard,
@@ -89,8 +93,14 @@ function Memory() {
       // If firstCard is defined but secondCard isn't, keep the firstCard as it is, flip the clicked card
       // and set it as the secondCard.
       else if (firstCard && !secondCard) {
+        let newCards = flipCard(cards, [clickedCard.key])
+
+        if (newCards.every((card) => card.isFlipped)) {
+          setWin(true)
+        }
+
         return {
-          cards: flipCard(cards, [clickedCard.key]),
+          cards: newCards,
           firstCard: firstCard,
           secondCard: clickedCard,
         }
